@@ -24,9 +24,116 @@ const premierLeagueTeams = {
   WolverhamptonWanderers: require('../img/uk/wolves.png'),
 };
 
-const HomeCard = ({ event }) => {
-  const team1Logo = premierLeagueTeams[event.home_team.replace(/\s+/g, '')];
-  const team2Logo = premierLeagueTeams[event.away_team.replace(/\s+/g, '')];
+const serieATeams = {
+  AtalantaBC: require('../img/it/atalanta.png'),
+  Bologna: require('../img/it/bologna.png'),
+  Cagliari: require('../img/it/cagliari.png'),
+  Empoli: require('../img/it/empoli.png'),
+  Fiorentina: require('../img/it/fiorentina.png'),
+  Frosinone: require('../img/it/frosinone.png'),
+  Genoa: require('../img/it/genoa.png'),
+  HellasVeronaFC: require('../img/it/hellasverona.png'),
+  InterMilan: require('../img/it/inter.png'),
+  Juventus: require('../img/it/juventus.png'),
+  Lazio: require('../img/it/lazio.png'),
+  Lecce: require('../img/it/lecce.png'),
+  ACMilan: require('../img/it/milan.png'),
+  Monza: require('../img/it/monza.png'),
+  Napoli: require('../img/it/napoli.png'),
+  ASRoma: require('../img/it/roma.png'),
+  Salernitana: require('../img/it/salernitana.png'), 
+  Sassuolo: require('../img/it/sassuolo.png'), 
+  Torino: require('../img/it/torino.png'),
+  Udinese: require('../img/it/udinese.png'), 
+};
+
+const bundesligaTeams = {
+  Augsburg: require('../img/de/augsburgo.png'),
+  BayerLeverkusen: require('../img/de/bayerleverkusen.png'),
+  BayernMunich: require('../img/de/bayernmunchen.png'),
+  BorussiaMonchengladbach: require('../img/de/bmonchengladbach.png'),
+  VfLBochum: require('../img/de/bochum.png'),
+  BorussiaDortmund: require('../img/de/borussiadortmund.png'),
+  SVDarmstadt98: require('../img/de/darmstadt98​.png'),
+  EintrachtFrankfurt: require('../img/de/eintrachtfrankfurt.png'),
+  SCFreiburg: require('../img/de/freiburg.png'),
+  FCHeidenheim: require('../img/de/heidenheim.png'),
+  TSGHoffenheim: require('../img/de/hoffenheim.png'),
+  FCKoln: require('../img/de/koln.png'),
+  FSVMainz05: require('../img/de/mainz05.png'),
+  RBLeipzig: require('../img/de/rbleipzig.png'),
+  VfBStuttgart: require('../img/de/stuttgart.png'),
+  UnionBerlin: require('../img/de/unionberlin.png'),
+  WerderBremen: require('../img/de/werderbremen.png'),
+  VfLWolfsburg: require('../img/de/wolfsburg.png'),
+};
+
+const ligaArgentinaTeams = {
+
+};
+
+const laLigaTeams = {
+  Alavés: require('../img/es/alaves.png'),
+  Almería: require('../img/es/almeria.png'),
+  AthleticBilbao: require('../img/es/athletic.png'),
+  AtléticoMadrid: require('../img/es/atlmadrid.png'),
+  Barcelona: require('../img/es/barcelona.png'),
+  RealBetis: require('../img/es/betis.png'),
+  CádizCF: require('../img/es/cadiz.png'),
+  CeltaVigo: require('../img/es/celta.png'),
+  Getafe: require('../img/es/getafe.png'),
+  Girona: require('../img/es/girona.png'),
+  GranadaCF: require('../img/es/granada.png'),
+  Mallorca: require('../img/es/mallorca.png'),
+  CAOsasuna: require('../img/es/osasuna.png'),
+  RayoVallecano: require('../img/es/rayovallecano.png'),
+  RealMadrid: require('../img/es/realmadrid.png'),
+  RealSociedad: require('../img/es/realsociedad.png'),
+  Sevilla: require('../img/es/sevilla.png'),
+  LasPalmas: require('../img/es/udlaspalmas.png'),
+  Valencia: require('../img/es/valencia.png'),
+  Villarreal: require('../img/es/villarreal.png'),
+};
+
+const ligue1Teams = {
+  Amiens: require('../img/fr/amiens.png'),
+  Clermont: require('../img/fr/clermont.png'),
+  LeHavre: require('../img/fr/havre.png'),
+  Lille: require('../img/fr/lille.png'),
+  Lorient: require('../img/fr/lorient.png'),
+  Metz: require('../img/fr/metz.png'),
+  ASMonaco: require('../img/fr/monaco.png'),
+  Montpellier: require('../img/fr/montpellier.png'),
+  Nantes: require('../img/fr/nantes.png'),
+  Nice: require('../img/fr/niza.png'),
+  Marseille: require('../img/fr/olimpiquemarsella.png'),
+  Lyon: require('../img/fr/olympiquelyon.png'),
+  ParisSaintGermain: require('../img/fr/psg.png'),
+  Strasbourg: require('../img/fr/racingetrasburgo.png'),
+  RCLens: require('../img/fr/racinglens.png'),
+  Rennes: require('../img/fr/rennais.png'),
+  Brest: require('../img/fr/stadebretois.png'),
+  StadedeReims: require('../img/fr/stadereims.png'),
+  Toulouse: require('../img/fr/toulouse.png'),
+};
+
+const HomeCard = ({ event, oddsAndPayout, league }) => {
+  const team1Logo = getTeamLogo(event.home_team, league);
+  const team2Logo = getTeamLogo(event.away_team, league);
+
+  let homeTeamOutcome = '';
+  let drawOutcome = '';
+  let awayTeamOutcome = '';
+
+  if (oddsAndPayout) {
+    const homeTeamData = oddsAndPayout.bookmakers[0].markets[0].outcomes.find(outcome => outcome.name === event.home_team);
+    const drawData = oddsAndPayout.bookmakers[0].markets[0].outcomes.find(outcome => outcome.name === 'Draw');
+    const awayTeamData = oddsAndPayout.bookmakers[0].markets[0].outcomes.find(outcome => outcome.name === event.away_team);
+
+    homeTeamOutcome = homeTeamData ? homeTeamData.price : '';
+    drawOutcome = drawData ? drawData.price : '';
+    awayTeamOutcome = awayTeamData ? awayTeamData.price : '';
+  }
 
   // Parse ISO 8601 formatted time
   const dateObj = new Date(event.commence_time);
@@ -62,21 +169,53 @@ const HomeCard = ({ event }) => {
           </View>
         </View>
         <View style={styles.detailsContainer}>
-          <Text style={styles.dateTime}>{formattedDateTime}</Text>
-          <Text style={styles.location}>{event.sport_title}</Text>
+          <Text style={styles.location}>{formattedDateTime}</Text>
+        </View>
+        <View style={styles.oddsContainer}>
+          <View style={styles.oddsItem}>
+            <Text style={styles.odds}>{homeTeamOutcome}</Text>
+            <Text style={styles.outcomeText}>1</Text>
+          </View>
+          <View style={styles.oddsItem}>
+            <Text style={styles.odds}>{drawOutcome}</Text>
+            <Text style={styles.outcomeText}>X</Text>
+          </View>
+          <View style={styles.oddsItem}>
+            <Text style={styles.odds}>{awayTeamOutcome}</Text>
+            <Text style={styles.outcomeText}>2</Text>
+          </View>
         </View>
       </View>
     </View>
   );
 };
 
+const getTeamLogo = (teamName, league) => {
+  switch (league) {
+    case 'soccer_epl':
+      return premierLeagueTeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
+    case 'soccer_italy_serie_a':
+      return serieATeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
+      case 'soccer_germany_bundesliga':
+      return bundesligaTeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
+    case 'soccer_argentina_primera_division':
+      return ligaArgentinaTeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
+    case 'soccer_france_ligue_one':
+      return ligue1Teams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
+    case 'soccer_spain_la_liga':
+      return laLigaTeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
+    default:
+      return require('../img/defaultLogo.png');
+  }
+};
+
 const styles = StyleSheet.create({
   cardContainer: {
-    width: '80%', // Set the width to 80% of the parent container
-    alignSelf: 'center', // Center the card horizontally
+    width: '80%',
+    alignSelf: 'center',
   },
   card: {
-    backgroundColor: '#121212', // Dark theme background color
+    backgroundColor: '#121212',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
@@ -89,9 +228,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     borderWidth: 2,
-    borderColor: '#555', // Border color
+    borderColor: '#555',
     borderTopWidth: 1,
-    borderTopColor: '#777', // Lighter color for top border
+    borderTopColor: '#777',
   },
   teamsContainer: {
     flexDirection: 'row',
@@ -102,17 +241,22 @@ const styles = StyleSheet.create({
   teamContainer: {
     alignItems: 'center',
     flex: 1,
-    height: 70, // Set a fixed height for the logo container
+    height: 70,
   },
   logo: {
     width: '90%',
     height: '90%',
   },
   teamName: {
-    fontSize: 11, // Decrease font size to 14
+    fontSize: 11,
     fontWeight: 'bold',
-    color: '#fff', // White color for team names
-    textAlign: 'center', // Center text horizontally
+    color: '#fff',
+    textAlign: 'center',
+  },
+  odds: {
+    fontSize: 10,
+    color: '#fff',
+    textAlign: 'center',
   },
   vsContainer: {
     alignItems: 'center',
@@ -122,19 +266,33 @@ const styles = StyleSheet.create({
   vsText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff', // White color for VS text
+    color: '#fff',
   },
   detailsContainer: {
     alignItems: 'center',
   },
   dateTime: {
     fontSize: 12,
-    color: '#fff', // White color for date/time text
+    color: '#fff',
     marginBottom: 5,
   },
   location: {
     fontSize: 14,
-    color: '#999', // Lighter color for location text
+    color: '#999',
+  },
+  oddsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  oddsItem: {
+    alignItems: 'center',
+  },
+  outcomeText: {
+    fontSize: 12,
+    color: '#fff',
+    marginTop: 5,
   },
 });
 
