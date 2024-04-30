@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     height: 60,
-    backgroundColor: '#121212', // Dark color for footer
+    backgroundColor: '#31363F', // Dark color for footer
     justifyContent: 'space-around',
     alignItems: 'center',
   },

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   FlatList,
   ActivityIndicator,
 } from "react-native";
@@ -11,8 +10,12 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HomeCard from "../components/HomeCard";
+import BetView from "../components/BetView";
 
-const apiKey = "3cd4cde4cb2c3121e3400910ddda3d9b";
+/*KEYS:
+3cd4cde4cb2c3121e3400910ddda3d9b
+*/
+const apiKey = "aca6bcc83b4086354791912e79b960fb";
 
 const leagues = [
   "soccer_argentina_primera_division",
@@ -28,6 +31,12 @@ const HomeScreen = () => {
   const [oddsAndPayout, setOddsAndPayout] = useState([]);
   const [selectedLeague, setSelectedLeague] = useState("soccer_epl");
   const [isLoading, setIsLoading] = useState(true);
+  const [showBetView, setShowBetView] = useState(false);
+  const [betList, setBetList] = useState([]);
+
+  const clearBetList = () => {
+    setBetList([]);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,14 +65,24 @@ const HomeScreen = () => {
     fetchData();
   }, [selectedLeague]);
 
+  useEffect(() => {
+    if (betList.length > 0) {
+      setShowBetView(true);
+    } else {
+      setShowBetView(false);
+    }
+  }, [betList]);
+
   return (
     <View style={styles.container}>
-      <Navbar
-        money="2000"
-        leagues={leagues}
-        setSelectedLeague={setSelectedLeague}
-      />
-      <ScrollView style={styles.content}>
+      <View style={styles.customHeader}>
+        <Navbar
+          money="2000"
+          leagues={leagues}
+          setSelectedLeague={setSelectedLeague}
+        />
+      </View>
+      <View style={styles.content}>
         <View>
           <Text style={styles.sectionHeading}>Live Matches</Text>
         </View>
@@ -78,7 +97,15 @@ const HomeScreen = () => {
                   const odds = oddsAndPayout.find(
                     (oddsItem) => oddsItem.id === item.id
                   );
-                  return <HomeCard event={item} oddsAndPayout={odds} league={selectedLeague} />;
+                  return (
+                    <HomeCard
+                      event={item}
+                      oddsAndPayout={odds}
+                      league={selectedLeague}
+                      betList={betList}
+                      setBetList={setBetList}
+                    />
+                  );
                 }}
                 keyExtractor={(item) => item.id}
               />
@@ -91,7 +118,8 @@ const HomeScreen = () => {
             <ActivityIndicator size="large" color="#0000ff" />
           )}
         </View>
-      </ScrollView>
+      </View>
+      {showBetView && <BetView betList={betList} clearBetList={clearBetList}/>}
       <Footer />
     </View>
   );
@@ -107,11 +135,27 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#4b4847",
+    backgroundColor: "#222831",
     width: "100%",
   },
   content: {
     flex: 1,
+  },
+  customHeader: {
+    paddingTop: 20,
+  },
+  apostarButton: {
+    position: "absolute",
+    bottom: 20,
+    alignSelf: "center",
+    backgroundColor: "green",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  apostarButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
 

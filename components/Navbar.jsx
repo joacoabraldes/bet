@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center', // Center items vertically
     justifyContent: 'space-between', // Adjusted to space between
-    backgroundColor: '#121212',
+    backgroundColor: '#31363F',
     paddingVertical: 10, // Apply padding only vertically
     paddingHorizontal: 20, // Apply padding only horizontally
   },
