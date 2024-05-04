@@ -18,12 +18,12 @@ import BetView from "../components/BetView";
 const apiKey = "aca6bcc83b4086354791912e79b960fb";
 
 const leagues = [
-  "soccer_argentina_primera_division",
-  "soccer_epl",
-  "soccer_france_ligue_one",
-  "soccer_germany_bundesliga",
-  "soccer_italy_serie_a",
-  "soccer_spain_la_liga",
+  { name: "Premier League", code: "soccer_epl" },
+  { name: "La Liga", code: "soccer_spain_la_liga" },
+  { name: "Bundesliga", code: "soccer_germany_bundesliga" },
+  { name: "Serie A", code: "soccer_italy_serie_a" },
+  { name: "Ligue 1", code: "soccer_france_ligue_one" },
+  { name: "Primera Division Argentina", code: "soccer_argentina_primera_division" },
 ];
 
 const HomeScreen = () => {
@@ -84,10 +84,9 @@ const HomeScreen = () => {
       </View>
       <View style={styles.content}>
         <View>
-          <Text style={styles.sectionHeading}>Live Matches</Text>
-        </View>
-        <View>
-          <Text style={styles.sectionHeading}>Upcoming Matches</Text>
+          <Text style={styles.sectionHeading}>
+            {leagues.find(league => league.code === selectedLeague)?.name}
+          </Text>
           {!isLoading ? (
             oddsAndPayout.length > 0 && upcomingEvents.length > 0 ? (
               <FlatList

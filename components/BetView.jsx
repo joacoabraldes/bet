@@ -18,21 +18,39 @@ const BetView = ({ betList, onPress, clearBetList }) => {
   const cumulativeOdd = betList.reduce((acc, cur) => acc * cur.odd, 1).toFixed(2);
   const potentialWinnings = wagerAmount * cumulativeOdd;
 
+  // Rendering logic for bet list
+  let displayedBetList = betList;
+  let hiddenBetCount = 0;
+  if (betList.length > 4) {
+    displayedBetList = betList.slice(0, 4);
+    hiddenBetCount = betList.length - 4;
+  }
+
   return (
     <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
-      <Text style={styles.cumulativeOdd}>Cumulative Odd: {cumulativeOdd}</Text>
+      <TouchableOpacity onPress={clearBetList} style={styles.closeButton}>
+        <Icon name="times" size={24} color="gray"/>
+      </TouchableOpacity>
+      <Text style={styles.cumulativeOdd}>{cumulativeOdd}</Text>
       <View style={styles.betListContainer}>
-        {betList.map((item, index) => (
+        {displayedBetList.map((item, index) => (
           <View key={index} style={styles.betItem}>
-            <Text style={styles.odd}>{item.match}     </Text>
-            <Text style={styles.match}>{item.team} - {item.odd}</Text>
+            <View style={styles.matchContainer}>
+              <Icon name="circle" size={15} color="#aaa" style={styles.icon} />
+              <View style={styles.matchNameContainer}>
+                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.match}>{item.match}</Text>
+              </View>
+            </View>
+            <Text style={styles.teamOdd}>{item.team} - {item.odd}</Text>
           </View>
         ))}
+        {hiddenBetCount > 0 && <Text style={styles.match}>{`And ${hiddenBetCount} more`}</Text>}
       </View>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           placeholder="Enter Wager Amount"
+          placeholderTextColor="gray"
           keyboardType="numeric"
           value={wagerAmount}
           onChangeText={text => setWagerAmount(text)}
@@ -40,9 +58,6 @@ const BetView = ({ betList, onPress, clearBetList }) => {
         <Text style={styles.potentialWinnings}>${potentialWinnings.toFixed(2)}</Text>
       </View>
       <View style={styles.bottomContainer}>
-        <TouchableOpacity onPress={clearBetList} style={styles.trashButton}>
-          <Icon name="trash" size={24} color="white" />
-        </TouchableOpacity>
         <TouchableOpacity onPress={onPress} style={styles.button}>
           <Text style={styles.buttonText}>APOSTAR</Text>
         </TouchableOpacity>
@@ -62,51 +77,78 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     alignItems: "center",
   },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 1,
+  },
   cumulativeOdd: {
-    color: "#fff",
-    fontSize: 14,
+    color: "#76ABAE",
+    fontSize: 17,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   betListContainer: {
+    marginTop: 10,
     marginBottom: 10,
     alignItems: "center",
   },
   betItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 5,
+    width: '90%', // Adjust width as needed
+  },
+  matchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  matchNameContainer: {
+    flex: 1,
+    overflow: 'hidden',
   },
   match: {
     color: "#fff",
     fontSize: 12,
     fontWeight: 'bold',
+    marginRight: 5, // Adjust spacing between icon and match
   },
-  odd: {
-    color: "#aaa",
-    fontSize: 10,
+  teamOdd: {
+    color: "#76ABAE",
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'right',
+    flexShrink: 1,
+  },
+  icon: {
+    marginRight: 5,
   },
   inputContainer: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     marginBottom: 10,
   },
-  inputLabel: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginRight: 10,
-  },
   input: {
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    padding: 10,
-    marginRight: 30,
-    width: "60%",
+    backgroundColor: 'transparent',
+    marginHorizontal: 40,
+    borderRadius: 0,
+    padding: 12,
+    paddingRight: 0,
+    width: "70%",
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: '#fff',
+    fontSize: 16,
+    color: '#fff',
+    width: '50%', 
   },
   potentialWinnings: {
-    color: '#fff',
+    color: '#78A083',
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -115,24 +157,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '90%',
   },
-  trashButton: {
-    backgroundColor: "#e74c3c",
-    borderRadius: 5,
-    padding: 10,
-  },
   button: {
     backgroundColor: "#78A083",
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
     marginBottom: 10,
-    width: "70%",
+    width: "100%",
   },
   buttonText: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
   },
+
 });
 
 export default BetView;

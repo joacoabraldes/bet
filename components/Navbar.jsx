@@ -7,23 +7,16 @@ const Navbar = ({ money, leagues, setSelectedLeague }) => {
   
   const handleLeagueSelection = (league) => {
     setSelectedLeague(league);
-    setIsDropdownVisible(false); // Hide dropdown after selecting a league
-
-    // Call API with selected league
-    // Example: You can replace the API URL with the selected league
-    const apiUrl = `https://api.the-odds-api.com/v4/sports/${league}/odds/`;
-    // Call your API with the apiUrl
-    // fetch(apiUrl)
-    //   .then(response => response.json())
-    //   .then(data => console.log(data))
-    //   .catch(error => console.error('Error fetching data:', error));
+    setIsDropdownVisible(false);
   };
 
   return (
     <View style={styles.navbar}>
-      <TouchableOpacity style={styles.iconButton} onPress={() => setIsDropdownVisible(!isDropdownVisible)}>
-        <Icon name="bars" size={24} color="#fff" />
-      </TouchableOpacity>
+      {leagues ? (
+        <TouchableOpacity style={styles.iconButton} onPress={() => setIsDropdownVisible(!isDropdownVisible)}>
+          <Icon name="bars" size={24} color="#fff" />
+        </TouchableOpacity>
+      ) : null}
       <View style={styles.spacer} />
       <Text style={styles.moneyCounter}>${money}</Text>
       {/* Dropdown Modal */}
@@ -38,12 +31,12 @@ const Navbar = ({ money, leagues, setSelectedLeague }) => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.dropdownItem}
-                  onPress={() => handleLeagueSelection(item)}
+                  onPress={() => handleLeagueSelection(item.code)}
                 >
-                  <Text style={styles.dropdownText}>{item.replace(/_/g, ' ')}</Text>
+                  <Text style={styles.dropdownText}>{item.name.replace(/_/g, ' ')}</Text>
                 </TouchableOpacity>
               )}
-              keyExtractor={(item) => item}
+              keyExtractor={(item) => item.code}
             />
           </View>
         </View>

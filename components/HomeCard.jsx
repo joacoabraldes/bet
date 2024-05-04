@@ -1,6 +1,6 @@
 import React , { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image ,TouchableOpacity} from 'react-native';
-import { premierLeagueTeams, serieATeams, bundesligaTeams } from '../assets/teamImages';
+import { premierLeagueTeams, serieATeams, bundesligaTeams ,laLigaTeams,ligue1Teams,ligaArgentinaTeams} from '../assets/teamImages';
 
 
 const HomeCard = ({ event, oddsAndPayout, league,betList,setBetList }) => {
@@ -35,6 +35,12 @@ const HomeCard = ({ event, oddsAndPayout, league,betList,setBetList }) => {
   const getButtonTextStyle = (button) => {
     return [styles.odds, pressedButton === button && styles.pressedButtonText];
   };
+
+  useEffect(() => {
+    if (betList.length == 0) {
+      setPressedButton(null); 
+    } 
+  }, [betList]);
 
 
   let homeTeamOutcome = '';
@@ -140,7 +146,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
-    
+    /*
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -153,7 +159,7 @@ const styles = StyleSheet.create({
     borderColor: '#555',
     borderTopWidth: 1,
     borderTopColor: '#777',
-    
+    */
   },
   teamsContainer: {
     flexDirection: 'row',
@@ -208,21 +214,21 @@ const styles = StyleSheet.create({
   oddsItem: {
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#78A083',
+    borderColor: '#76ABAE',
     padding: 8,
     borderRadius: 15,
     width: '20%',
   },
   odds: {
     fontSize: 10,
-    color: '#78A083',
+    color: '#76ABAE',
     textAlign: 'center',
     fontWeight: 'bold',
   },
   pressedButton: {
     borderWidth: 2,
-    borderColor: '#78A083',
-    backgroundColor: '#78A083',
+    borderColor: '#76ABAE',
+    backgroundColor: '#76ABAE',
   },
   pressedButtonText: {
     color: 'white',
