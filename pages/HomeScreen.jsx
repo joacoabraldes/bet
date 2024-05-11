@@ -11,6 +11,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HomeCard from "../components/HomeCard";
 import BetView from "../components/BetView";
+import { fetchEvents } from "../services/api";
 
 /*KEYS:
 3cd4cde4cb2c3121e3400910ddda3d9b
@@ -18,18 +19,17 @@ import BetView from "../components/BetView";
 const apiKey = "aca6bcc83b4086354791912e79b960fb";
 
 const leagues = [
-  { name: "Premier League", code: "soccer_epl" },
-  { name: "La Liga", code: "soccer_spain_la_liga" },
-  { name: "Bundesliga", code: "soccer_germany_bundesliga" },
-  { name: "Serie A", code: "soccer_italy_serie_a" },
-  { name: "Ligue 1", code: "soccer_france_ligue_one" },
-  { name: "Primera Division Argentina", code: "soccer_argentina_primera_division" },
+  { name: "Premier League", code: 1980 },
+  { name: "La Liga", code: 2196 },
+  { name: "Bundesliga", code: 1842 },
+  { name: "Serie A", code: 2436 },
+  { name: "Ligue 1", code: 2036 },
+  { name: "Primera Division Argentina", code: 210697 },
 ];
 
 const HomeScreen = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
-  const [oddsAndPayout, setOddsAndPayout] = useState([]);
-  const [selectedLeague, setSelectedLeague] = useState("soccer_epl");
+  const [selectedLeague, setSelectedLeague] = useState(1980);
   const [isLoading, setIsLoading] = useState(true);
   const [showBetView, setShowBetView] = useState(false);
   const [betList, setBetList] = useState([]);
@@ -41,21 +41,8 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const eventsApiUrl = `https://api.the-odds-api.com/v4/sports/${selectedLeague}/scores`;
-        const oddsApiUrl = `https://api.the-odds-api.com/v4/sports/${selectedLeague}/odds/`;
-
-        console.log(eventsApiUrl, oddsApiUrl);
-        // Fetch upcoming events
-        const eventsResponse = await axios.get(eventsApiUrl, {
-          params: { apiKey },
-        });
-        setUpcomingEvents(eventsResponse.data);
-
-        // Fetch odds and payout
-        const oddsResponse = await axios.get(oddsApiUrl, {
-          params: { apiKey, regions: "uk", markets: "h2h" },
-        });
-        setOddsAndPayout(oddsResponse.data);
+        const eventsData = await fetchEvents(selectedLeague);
+        setUpcomingEvents(eventsData.events);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -85,32 +72,32 @@ const HomeScreen = () => {
       <View style={styles.content}>
         <View>
           <Text style={styles.sectionHeading}>
-            {leagues.find(league => league.code === selectedLeague)?.name}
+            {leagues.find((league) => league.code === selectedLeague)?.name}
           </Text>
           {!isLoading ? (
-            oddsAndPayout.length > 0 && upcomingEvents.length > 0 ? (
+            upcomingEvents.length > 0 ? (
               <FlatList
+                contentContainerStyle={{ paddingBottom: 100 }}
                 data={upcomingEvents}
                 renderItem={({ item }) => {
-                  // Find the odds for the current event
-                  const odds = oddsAndPayout.find(
-                    (oddsItem) => oddsItem.id === item.id
-                  );
+                  // Check if money_line is null
+                  if (item.periods.num_0.money_line === null) {
+                    return null; // Skip rendering the card
+                  }
                   return (
                     <HomeCard
                       event={item}
-                      oddsAndPayout={odds}
                       league={selectedLeague}
                       betList={betList}
                       setBetList={setBetList}
                     />
                   );
                 }}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.event_id}
               />
             ) : (
               <Text style={styles.sectionHeading}>
-                aaaaaa oh no there are no matches in the argentina league
+                Oh no, there are no matches in the selected league.
               </Text>
             )
           ) : (
@@ -118,7 +105,7 @@ const HomeScreen = () => {
           )}
         </View>
       </View>
-      {showBetView && <BetView betList={betList} clearBetList={clearBetList}/>}
+      {showBetView && <BetView betList={betList} clearBetList={clearBetList} />}
       <Footer />
     </View>
   );
@@ -141,20 +128,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   customHeader: {
-    paddingTop: 20,
-  },
-  apostarButton: {
-    position: "absolute",
-    bottom: 20,
-    alignSelf: "center",
-    backgroundColor: "green",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  apostarButtonText: {
-    color: "white",
-    fontWeight: "bold",
+    paddingTop: 40,
   },
 });
 

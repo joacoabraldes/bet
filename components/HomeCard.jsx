@@ -3,27 +3,27 @@ import { View, Text, StyleSheet, Image ,TouchableOpacity} from 'react-native';
 import { premierLeagueTeams, serieATeams, bundesligaTeams ,laLigaTeams,ligue1Teams,ligaArgentinaTeams} from '../assets/teamImages';
 
 
-const HomeCard = ({ event, oddsAndPayout, league,betList,setBetList }) => {
-  const team1Logo = getTeamLogo(event.home_team, league);
-  const team2Logo = getTeamLogo(event.away_team, league);
+const HomeCard = ({ event, league,betList,setBetList }) => {
+  const team1Logo = getTeamLogo(event.home, league);
+  const team2Logo = getTeamLogo(event.away, league);
   const [pressedButton, setPressedButton] = useState(null);
-  const match= event.home_team + " X " + event.away_team;
+  const match= event.home + " X " + event.away;
 
   const handlePress = (button, odd, team) => {
-    const existingBet = betList.find(item => item.id === event.id);
+    const existingBet = betList.find(item => item.id === event.event_id);
   
     if (existingBet) {
       if(existingBet.team == team){
-        const updatedBetList = betList.filter(item => !(item.id === event.id && item.team === team));
+        const updatedBetList = betList.filter(item => !(item.id === event.event_id && item.team === team));
         setBetList(updatedBetList);
         setPressedButton(null); 
       }else{
-        const updatedBetList = betList.filter(item => item.id !== event.id);
-        setBetList([...updatedBetList, { id: event.id, odd, team,match }]);
+        const updatedBetList = betList.filter(item => item.id !== event.event_id);
+        setBetList([...updatedBetList, { id: event.event_id, odd, team,match }]);
         setPressedButton(button);
       }
     } else {
-      setBetList([...betList, { id: event.id, odd, team ,match}]);
+      setBetList([...betList, { id: event.event_id, odd, team ,match}]);
       setPressedButton(button); 
     }
   };
@@ -43,22 +43,12 @@ const HomeCard = ({ event, oddsAndPayout, league,betList,setBetList }) => {
   }, [betList]);
 
 
-  let homeTeamOutcome = '';
-  let drawOutcome = '';
-  let awayTeamOutcome = '';
-
-  if (oddsAndPayout) {
-    const homeTeamData = oddsAndPayout.bookmakers[0].markets[0].outcomes.find(outcome => outcome.name === event.home_team);
-    const drawData = oddsAndPayout.bookmakers[0].markets[0].outcomes.find(outcome => outcome.name === 'Draw');
-    const awayTeamData = oddsAndPayout.bookmakers[0].markets[0].outcomes.find(outcome => outcome.name === event.away_team);
-
-    homeTeamOutcome = homeTeamData ? homeTeamData.price : '';
-    drawOutcome = drawData ? drawData.price : '';
-    awayTeamOutcome = awayTeamData ? awayTeamData.price : '';
-  }
+  const homeTeamOutcome = event.periods.num_0.money_line?.home ?? '';
+const drawOutcome = event.periods.num_0.money_line?.draw ?? '';
+const awayTeamOutcome = event.periods.num_0.money_line?.away ?? '';
 
   // Parse ISO 8601 formatted time
-  const dateObj = new Date(event.commence_time);
+  const dateObj = new Date(event.starts);
   // Extract day, month, hours, and minutes
   const day = dateObj.getUTCDate();
   const month = dateObj.getUTCMonth() + 1; // Months are 0-based, so we add 1
@@ -82,14 +72,14 @@ const HomeCard = ({ event, oddsAndPayout, league,betList,setBetList }) => {
         <View style={styles.teamsContainer}>
           <View style={styles.teamContainer}>
             <Image source={team1Logo} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.teamName}>{event.home_team}</Text>
+            <Text style={styles.teamName}>{event.home}</Text>
           </View>
           <View style={styles.vsContainer}>
             <Text style={styles.vsText}>VS</Text>
           </View>
           <View style={styles.teamContainer}>
             <Image source={team2Logo} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.teamName}>{event.away_team}</Text>
+            <Text style={styles.teamName}>{event.away}</Text>
           </View>
         </View>
         <View style={styles.detailsContainer}>
@@ -98,7 +88,7 @@ const HomeCard = ({ event, oddsAndPayout, league,betList,setBetList }) => {
         <View style={styles.oddsContainer}>
         <TouchableOpacity
             style={getButtonStyle('home')}
-            onPress={() => handlePress('home',homeTeamOutcome,event.home_team)}>
+            onPress={() => handlePress('home',homeTeamOutcome,event.home)}>
             <Text style={getButtonTextStyle('home')}>{homeTeamOutcome}</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -108,7 +98,7 @@ const HomeCard = ({ event, oddsAndPayout, league,betList,setBetList }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={getButtonStyle('away')}
-            onPress={() => handlePress('away',awayTeamOutcome,event.away_team)}>
+            onPress={() => handlePress('away',awayTeamOutcome,event.away)}>
             <Text style={getButtonTextStyle('away')}>{awayTeamOutcome}</Text>
           </TouchableOpacity>
         </View>
@@ -119,17 +109,17 @@ const HomeCard = ({ event, oddsAndPayout, league,betList,setBetList }) => {
 
 const getTeamLogo = (teamName, league) => {
   switch (league) {
-    case 'soccer_epl':
+    case 1980:
       return premierLeagueTeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
-    case 'soccer_italy_serie_a':
+    case 2436:
       return serieATeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
-      case 'soccer_germany_bundesliga':
+      case 1842:
       return bundesligaTeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
-    case 'soccer_argentina_primera_division':
+    case 210697:
       return ligaArgentinaTeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
-    case 'soccer_france_ligue_one':
+    case 2036:
       return ligue1Teams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
-    case 'soccer_spain_la_liga':
+    case 2196:
       return laLigaTeams[teamName.replace(/\s+/g, '')] || require('../img/defaultLogo.png');
     default:
       return require('../img/defaultLogo.png');
